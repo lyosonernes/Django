@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script>
+$(document).on('click','.test', function(evt) {
+    if($(evt.target).is("button.mybutton")) {
+    $('#mydiv').show();
+	alert()//Hide
+    }
+})
+</script>
+<div id='container_feed'>
+	<div class ='test'>
+  <button id=my-id1 class='mybutton' data-userid='4'>Random Dude</button>
+  <button id=my-id2 class='mybutton2' data-userid='4'>Random Dude</button>
+</div>
+  <button id=my-id3 class='mybutton' data-userid='4'>Random Dude</button>
+  <div class='feed_element' data-userid='5'>Random Dude 2</div>
+
+</div>
+
+<div id=mydiv style='display:none'>
+test
+</div>
+
+	        <div class="col-lg-1">
+            <a class="btn btn-primary" class='testmod' id="addStudent">modal</a>
+			</div>	        
+			<div class="col-lg-1">
+            <a class="btn btn-primary" class='testmod' id="addStudent">modal</a>
+			</div>
+		
+		  <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" id="stuadd_modal">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Label</h4>
+                </div><!-- end .modal-header -->
+                <div class="modal-body">
+
+                    <form class="form-horizontal">
+
+                        <div class="form-group">
+                            <label for="stu_name" class="col-sm-2 control-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="stu_name" name="stu_name"
+                                       placeholder="name">
+                            </div>
+                        </div><!-- group  -->
+                        <div class="form-group">
+                            <label for="stu_age" class="col-sm-2 control-label">Age</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="stu_age" name="stu_age" placeholder="age">
+                            </div>
+                        </div><!-- group  -->
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Gender</label>
+                            <div class="col-sm-5">
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="inlineRadio1" value="1"> Male
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="inlineRadio2" value="0"> Female
+                                </label>
+
+                            </div>
+                        </div><!-- group  -->
+
+                        <div class="form-group">
+                            <label for="class_name" class="col-sm-2 control-label">Class</label>
+                            <div class="col-sm-3">
+                                <select class="form-control" id="class_name" name="class_name">
+                                    {% for class in class_list %}
+                                        <option value="{{ class.id }}">{{ class.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div><!-- group  -->
+
+                    </form><!-- end form -->
+                </div><!-- end .modal-body  -->
+
+                <div class="modal-footer">
+                    <div class="col-lg-6">
+                        <span id="modal_error_msg"  style="color: red"></span>
+                    </div>
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="stuadd_modal_submit">Submit</button>
+                </div><!-- end .modal-footer-->
+
+            </div> <!--end .modal-content -->
+        </div> <!-- end .modal-dialog-->
+    </div> <!-- end .modal fade -->
+
+    <!-- script start -->
+    <script>
+        $(function () {
+            bindClickEvent();
+        });
+
+        function bindClickEvent() {
+            $('.testmod').click(function () {
+                $('#myModal').modal('show');
+            });
+
+            $('#stuadd_modal_submit').click(function () {
+                var stu_data = {};
+                $('#stuadd_modal').find('input,select').each(function () {
+{#                    console.log(this);#}
+                    var stu_key = $(this).attr('name');
+                    var stu_value = $(this).val();
+{#                    console.log(stu_key);#}
+{#                    console.log(stu_value);#}
+                    if (stu_key == 'gender') {
+                        if (!$(this).prop('checked')) {
+                            {#continue;#}
+                            return true;
+                        }
+                    }
+                    stu_data[stu_key] = stu_value;
+                });
+{#                //console.log(stu_data); //{stu_name: "aa", stu_age: "bb", gender: "1", class_name: "1"}#}
+
+                $.ajax({
+                    url:'/add_students/',
+                    type:'POST',
+                    data:stu_data,
+                    success:function (args) {
+                        var respone_dict=JSON.parse(args);
+                        if(respone_dict.status) {
+{#                            console.log("success");#}
+                            window.location.reload();
+                        }else{
+                            $('#modal_error_msg').text(respone_dict.msg);
+                        }
+                    }
+                })
+            });
+        }{#function end#}
+
+    </script>
+
+</body>
+</html>
